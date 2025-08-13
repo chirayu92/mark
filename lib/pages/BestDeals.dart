@@ -38,9 +38,12 @@ class _BestDealsState extends State<BestDeals> {
 
   Future<void> Best() async {
     // Validate input fields
-    if (Name.text.trim().isEmpty || Price.text.trim().isEmpty || Discription.text.trim().isEmpty)
+    if (Name.text.trim().isEmpty ||
+        Price.text.trim().isEmpty ||
+        Discription.text.trim().isEmpty ||
+        base64Image == null)
     {
-      Fluttertoast.showToast(msg: "Empty field please add items");
+      Fluttertoast.showToast(msg: "Empty field please fill up and add image");
       return;  // Stop if validation fails
     }
     try {
@@ -52,11 +55,13 @@ class _BestDealsState extends State<BestDeals> {
         //"timestamp": FieldValue.serverTimestamp(),  // Optional: to save timestamp
       });
 
+      Name.clear();
+      Price.clear();
+      Discription.clear();
+      setState(() {
+        base64Image = null;
+      });
 
-      // Clear inputs on success
-      // Name.clear();
-      // Price.clear();
-      // Discription.clear();
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Item added successfully!")),
@@ -66,6 +71,12 @@ class _BestDealsState extends State<BestDeals> {
         SnackBar(content: Text("Failed to add item. ")),
       );
     }
+  }
+  Future<void> deleteItem(String id) async {
+    await FirebaseFirestore.instance.collection("Best").doc(id).delete();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Item deleted")),
+    );
   }
 
   @override
@@ -85,7 +96,7 @@ class _BestDealsState extends State<BestDeals> {
             if (base64Image != null)
               Column(
                 children: [
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   const Text("Preview:"),
                   Image.memory(base64Decode(base64Image!), height: 150),
                 ],
@@ -133,11 +144,37 @@ class _BestDealsState extends State<BestDeals> {
             ),
             )
             ),
-
+            Expanded(child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection("Best").snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+                final docs = snapshot.data!.docs;
+                if (docs.isEmpty) return Center(child: Text("No items yet"));
+                return ListView.builder(
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    var doc = docs[index];
+                    return Card(
+                      child: ListTile(
+                        leading: doc["image"] != null ? Image.memory(base64Decode(doc["image"]),
+                            width: 50, height: 50, fit: BoxFit.cover)
+                            : Icon(Icons.image),
+                        title: Text(doc["Name"]),subtitle: Text("Rs. ${doc["Price"]}\n${doc["Discription"]}"),
+                        isThreeLine: true,
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => deleteItem(doc.id),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            ),
           ],
         ),
-      ),
-
+      )
     );
   }
 }

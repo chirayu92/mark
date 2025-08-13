@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mark/Categories/Babies.dart';
 import 'package:mark/Categories/Child.dart';
 import 'package:mark/Categories/Men.dart';
 import 'package:mark/Categories/Women.dart';
+import 'package:mark/Profile.dart';
 import 'package:mark/login.dart';
 import 'package:mark/pages/CartPage.dart';
 import 'package:mark/pages/ItemsAdd.dart';
@@ -19,8 +21,47 @@ class HomePage extends StatefulWidget {
 }
 class _HomePageState extends State<HomePage> {
   String? name;
+  String? base64Image;
+  bool loadingImage = true;
 
   @override
+  void initState() {
+    super.initState();
+    getData();
+    loadUserImage();
+  }
+  Future<void> loadUserImage() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      setState(() {
+        base64Image = null;
+        loadingImage = false;
+      });
+      return;
+    }
+
+    try {
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        setState(() {
+          base64Image = doc.data()?['image'];
+          loadingImage = false;
+        });
+      } else {
+        setState(() {
+          base64Image = null;
+          loadingImage = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        base64Image = null;
+        loadingImage = false;
+      });
+    }
+  }
+
+
   void getData()async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
@@ -50,14 +91,10 @@ class _HomePageState extends State<HomePage> {
         'qty': 1,
         'isCheckout': false,
         'isDelivered': false,
+        'check':false,
       });
     }
   }
-  initState(){
-    super.initState();
-    getData();
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -68,10 +105,31 @@ class _HomePageState extends State<HomePage> {
           fontSize: 35,
           color: Colors.red,
         ),),
-        leading: Icon(Icons.people_outlined),
+        leading: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(context,
+                MaterialPageRoute(builder: (context) => profile()),
+              );
+              }, child: CircleAvatar(
+            backgroundColor: Colors.grey[300],
+            backgroundImage: (loadingImage || base64Image == null) ? null : MemoryImage(base64Decode(base64Image!)),
+            child: (loadingImage || base64Image == null) ? Icon(Icons.person_outline, color: Colors.grey, size: 30) : null,
+            ),
+          ),
+        ),
         actions: [
-         IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>Cartpage()));}, icon: Icon(Icons.shopping_cart)),
-          IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>Items()));}, icon: Icon(Icons.add))
+         IconButton(
+             onPressed: (){
+               Navigator.push(context, MaterialPageRoute(
+                   builder: (context)=>Cartpage()));},
+             icon: Icon(Icons.shopping_cart)),
+          IconButton(
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(
+                    builder: (context)=>Items()));},
+              icon: Icon(Icons.add))
         ],
         backgroundColor: Colors.blue,
         centerTitle: true,
@@ -237,13 +295,13 @@ class _HomePageState extends State<HomePage> {
                                                 color: Colors.deepOrange,
                                                 borderRadius: BorderRadius.circular(6),
                                               ),
-                                              child: const Text(
-                                                "-80%",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12,
-                                                ),
-                                              ),
+                                              // child: const Text(
+                                              //   "-80%",
+                                              //   style: TextStyle(
+                                              //     color: Colors.white,
+                                              //     fontSize: 12,
+                                              //   ),
+                                              // ),
                                             ),
                                           ],
                                         ),
@@ -400,13 +458,13 @@ class _HomePageState extends State<HomePage> {
                                               color: Colors.deepOrange,
                                               borderRadius: BorderRadius.circular(6),
                                             ),
-                                            child: const Text(
-                                              "-80%",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                              ),
-                                            ),
+                                            // child: const Text(
+                                            //   "-80%",
+                                            //   style: TextStyle(
+                                            //     color: Colors.white,
+                                            //     fontSize: 12,
+                                            //   ),
+                                            // ),
                                           ),
                                         ],
                                       ),
@@ -724,13 +782,13 @@ class _HomePageState extends State<HomePage> {
                                               color: Colors.deepOrange,
                                               borderRadius: BorderRadius.circular(6),
                                             ),
-                                            child: const Text(
-                                              "-80%",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                              ),
-                                            ),
+                                            // child: const Text(
+                                            //   "-80%",
+                                            //   style: TextStyle(
+                                            //     color: Colors.white,
+                                            //     fontSize: 12,
+                                            //   ),
+                                            // ),
                                           ),
                                         ],
                                       ),
@@ -835,8 +893,21 @@ class _HomePageState extends State<HomePage> {
                // ElevatedButton(onPressed: (){Navigator.push(context,MaterialPageRoute(builder: (context) => test()),);}, child: Text("Back")),
               ),
               SizedBox(height: 100),
-              ElevatedButton(onPressed: (){Navigator.push(context,
-                MaterialPageRoute(builder: (context) => LoginPage()),);}, child: Text("Log out"))
+              ElevatedButton(onPressed:()
+                  async{
+                    await FirebaseAuth.instance.signOut();
+                    Fluttertoast.showToast(
+                      msg: "Logged out successfully",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                    );
+                    await Future.delayed(const Duration(seconds: 1));
+                    Navigator.pushReplacement(
+                       context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );},
+                  child: Text("Log out")
+              )
             ],
           ),
         ),

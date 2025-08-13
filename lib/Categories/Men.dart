@@ -10,6 +10,15 @@ class Men extends StatefulWidget {
 class _MenState extends State<Men> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Sorry"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center( child:Image.asset("assets/wop.jpg"),
+        ),
+      ),
+    );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +12,25 @@ class Cartpage extends StatefulWidget {
 }
 
 class _CartpageState extends State<Cartpage> {
+
+  bool check = false;
+
+  void changeCheck(String docId,bool check )async{
+    log(docId);
+
+    log(check.toString());
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final uid = user.uid;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('cart')
+        .doc(docId).update(
+        {'check':check} );
+
+
+  }
   Future<void> updateCart(String docId, int qty)async{
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -20,7 +40,7 @@ class _CartpageState extends State<Cartpage> {
         .doc(uid)
         .collection('cart')
         .doc(docId).update(
-        {'qty':qty});
+        {'qty':qty,});
   }
 
   double calculateTotal(List<QueryDocumentSnapshot> items) {
@@ -93,7 +113,10 @@ class _CartpageState extends State<Cartpage> {
             return const Center (child: Text ("your cart is empty"));
           }
           final items = snapshot.data!.docs;
-          final totalPrice= calculateTotal(items);
+          final selectedItems = snapshot.data!.docs.where((doc) {
+            return doc.get('check') == true;
+          }).toList();
+          final totalPrice= calculateTotal(selectedItems);
           return Column(
             children: [
               Expanded(
@@ -111,6 +134,11 @@ class _CartpageState extends State<Cartpage> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              Checkbox(value: data['check'], onChanged: (bool? newValue) {
+                                setState(() {
+                                  changeCheck(data['Name'],newValue!);
+                                });
+                              },),
                               IconButton(
                                   onPressed: (){
                                     if(qty>1){

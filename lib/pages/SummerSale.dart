@@ -38,9 +38,12 @@ class _SummerSaleState extends State<SummerSale> {
 
   Future<void> Summer() async {
     // Validate input fields
-    if (Name.text.trim().isEmpty || Price.text.trim().isEmpty || Discription.text.trim().isEmpty)
+    if (Name.text.trim().isEmpty ||
+        Price.text.trim().isEmpty ||
+        Discription.text.trim().isEmpty ||
+        base64Image==null)
     {
-      Fluttertoast.showToast(msg: "Empty field please add items");
+      Fluttertoast.showToast(msg: "Empty field please fill up and add image n");
       return;  // Stop if validation fails
     }
     try {
@@ -67,7 +70,12 @@ class _SummerSaleState extends State<SummerSale> {
       );
     }
   }
-
+  Future<void> deleteItem(String id) async {
+    await FirebaseFirestore.instance.collection("Summer").doc(id).delete();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Item deleted")),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,11 +141,37 @@ class _SummerSaleState extends State<SummerSale> {
             ),
             )
             ),
-
+            Expanded(child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection("Summer").snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+                final docs = snapshot.data!.docs;
+                if (docs.isEmpty) return Center(child: Text("No items yet"));
+                return ListView.builder(
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    var doc = docs[index];
+                    return Card(
+                      child: ListTile(
+                        leading: doc["image"] != null ? Image.memory(base64Decode(doc["image"]),
+                            width: 50, height: 50, fit: BoxFit.cover)
+                            : Icon(Icons.image),
+                        title: Text(doc["Name"]),subtitle: Text("Rs. ${doc["Price"]}\n${doc["Discription"]}"),
+                        isThreeLine: true,
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => deleteItem(doc.id),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            ),
           ],
         ),
-      ),
-
+      )
     );
   }
 }

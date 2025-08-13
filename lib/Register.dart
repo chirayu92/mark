@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mark/login.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -12,20 +16,45 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  String? base64Image;
+  Future<void> pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source, imageQuality: 70);
+
+    if (pickedFile != null) {
+      final compressed = await FlutterImageCompress.compressWithFile(
+        pickedFile.path,
+        quality: 70,
+      );
+
+      if (compressed != null) {
+        setState(() {
+          base64Image = base64Encode(compressed);
+        });
+      }
+    }
+  }
+
   final _formkey = GlobalKey<FormState>();
 
   TextEditingController email = TextEditingController();
   TextEditingController name = TextEditingController();
   TextEditingController address = TextEditingController();
+  TextEditingController phone = TextEditingController();
   TextEditingController password = TextEditingController();
+
   bool _obsecure =true;
   FirebaseAuth _auth = FirebaseAuth.instance;
   Future<void> _register()async{
-    if (name.text.isEmpty || email.text.isEmpty || password.text.isEmpty)
-      {
-        Fluttertoast.showToast(msg: "Empty Fields please fill up the form");
-        return;
-      }
+    if (!_formkey.currentState!.validate()) {
+      Fluttertoast.showToast(msg: "Please fix errors in the form");
+      return;
+    }
+
+    if (base64Image == null) {
+      Fluttertoast.showToast(msg: "Please pick an image");
+      return;
+    }
     try{
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
           email: email.text,
@@ -38,6 +67,8 @@ class _RegisterPageState extends State<RegisterPage> {
           "name": name.text,
           "email": email.text,
           "address": address.text,
+          "phone": phone.text,
+          "image" : base64Image,
         });
         Fluttertoast.showToast(msg: "Registration Successful");
         Navigator.pushReplacement(
@@ -69,13 +100,6 @@ class _RegisterPageState extends State<RegisterPage> {
             fontSize: 30,
             color: Colors.brown
         )),
-        //leading: Icon(Icons.people),
-        //actions: [
-         // Padding(
-           // padding: const EdgeInsets.only(right: 8.0),
-           // child: Icon(Icons.bike_scooter),
-          //),
-        //],
         centerTitle: true,
       ),
       body: Padding(
@@ -84,6 +108,11 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Form(
             key: _formkey,
             child: Column(children: [
+              if (base64Image != null) ...[
+                const SizedBox(height: 150),
+                const Text("Image Preview:"),
+                Image.memory(base64Decode(base64Image!), height: 150),
+              ],
               Center(child: Text("Please fill the Form",style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -99,6 +128,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   hintText: "Enter your name",
                   prefixIcon: Icon(Icons.person),
                 ),
+                validator: (value) {
+                if (value == null || value.trim().isEmpty){
+                  return 'Name is required';
+                }
+                return null;
+                },
               ),
               SizedBox(height: 10),
               TextFormField(controller: email,
@@ -108,6 +143,16 @@ class _RegisterPageState extends State<RegisterPage> {
                   hintText: "Enter your email",
                   prefixIcon: Icon(Icons.email_outlined),
                 ),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Email is required';
+                  }
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value.trim())) {
+                    return 'Enter a valid email';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 10),
               TextFormField(controller: address,
@@ -117,6 +162,33 @@ class _RegisterPageState extends State<RegisterPage> {
                   hintText: "Enter your address",
                   prefixIcon: Icon(Icons.home),
                 ),
+                validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Address is required';
+                }
+                return null;
+                },
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: phone, // <-- Phone input field with validator
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Colors.green,
+                  hintText: "Enter your phone number",
+                  prefixIcon: Icon(Icons.phone),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Phone number is required';
+                  }
+                  final digitsOnly = RegExp(r'^\d+$');
+                  if (!digitsOnly.hasMatch(value.trim())) {
+                    return 'Phone number must contain digits only';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 10),
               TextFormField(
@@ -137,7 +209,25 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
               SizedBox(height: 20,),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(onPressed: ()=>pickImage(ImageSource.camera),
+                      child: Text("Camera",style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                      ),
+                      )
+                  ),
+                  ElevatedButton(onPressed: ()=>pickImage(ImageSource.gallery),
+                      child: Text("Gallery",style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                      ),
+                      )
+                  ),
 
+                ],
+              ),
               ElevatedButton(onPressed: _register,
                child: Text("Register")),
             ]

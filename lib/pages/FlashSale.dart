@@ -38,9 +38,12 @@ class _FlashSaleState extends State<FlashSale> {
 
   Future<void> Flash() async {
     // Validate input fields
-    if (Name.text.trim().isEmpty || Price.text.trim().isEmpty || Discription.text.trim().isEmpty)
+    if (Name.text.trim().isEmpty ||
+        Price.text.trim().isEmpty ||
+        Discription.text.trim().isEmpty ||
+        base64Image == null)
     {
-      Fluttertoast.showToast(msg: "Empty field please add items");
+      Fluttertoast.showToast(msg: "Empty field please fill up and add image");
       return;  // Stop if validation fails
     }
     try {
@@ -51,12 +54,12 @@ class _FlashSaleState extends State<FlashSale> {
         "image":base64Image
         //"timestamp": FieldValue.serverTimestamp(),  // Optional: to save timestamp
       });
-
-
-      // Clear inputs on success
-      // Name.clear();
-      // Price.clear();
-      // Discription.clear();
+      Name.clear();
+      Price.clear();
+      Discription.clear();
+      setState(() {
+        base64Image == null;
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Item added successfully!")),
@@ -66,6 +69,12 @@ class _FlashSaleState extends State<FlashSale> {
         SnackBar(content: Text("Failed to add item. ")),
       );
     }
+  }
+  Future<void> deleteItem(String id) async {
+    await FirebaseFirestore.instance.collection("Flash").doc(id).delete();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Item deleted")),
+    );
   }
 
   @override
@@ -84,12 +93,12 @@ class _FlashSaleState extends State<FlashSale> {
           children: [
             if (base64Image != null)
           Column(
-      children: [
-      const SizedBox(height: 10),
-        const Text("Preview:"),
-        Image.memory(base64Decode(base64Image!), height: 150),
-        ],
-    ),
+            children: [
+              const SizedBox(height: 10),
+              const Text("Preview:"),
+              Image.memory(base64Decode(base64Image!), height: 150),
+            ],
+          ),
             TextFormField(controller: Name,
             decoration: InputDecoration(
               filled: true,
@@ -130,14 +139,39 @@ class _FlashSaleState extends State<FlashSale> {
             ElevatedButton(onPressed: (){Flash();}, child: Text("Add",style: TextStyle(
               fontSize: 20,
               color: Colors.black,
+            ),)
             ),
-            )
-            ),
-
-          ],
+            Expanded(child: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance.collection("Flash").snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+                  final docs = snapshot.data!.docs;
+                   if (docs.isEmpty) return Center(child: Text("No items yet"));
+                   return ListView.builder(
+                        itemCount: docs.length,
+                        itemBuilder: (context, index) {
+                        var doc = docs[index];
+                      return Card(
+                          child: ListTile(
+                            leading: doc["image"] != null ? Image.memory(base64Decode(doc["image"]),
+                            width: 50, height: 50, fit: BoxFit.cover)
+                               : Icon(Icons.image),
+                                  title: Text(doc["Name"]),subtitle: Text("Rs. ${doc["Price"]}\n${doc["Discription"]}"),
+                                    isThreeLine: true,
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () => deleteItem(doc.id),
+                                    ),
+                          ),
+                      );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
         ),
-      ),
-
+      )
     );
   }
 }
