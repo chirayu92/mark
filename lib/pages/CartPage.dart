@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mark/pages/CheckOut.dart';
 class Cartpage extends StatefulWidget {
   const Cartpage({super.key});
 
@@ -16,9 +15,7 @@ class _CartpageState extends State<Cartpage> {
   bool check = false;
 
   void changeCheck(String docId,bool check )async{
-    log(docId);
 
-    log(check.toString());
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     final uid = user.uid;
@@ -26,11 +23,11 @@ class _CartpageState extends State<Cartpage> {
         .collection('users')
         .doc(uid)
         .collection('cart')
-        .doc(docId).update(
-        {'check':check} );
-
-
+        .doc(docId)
+        .update({'check':check},
+    );
   }
+
   Future<void> updateCart(String docId, int qty)async{
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -69,17 +66,17 @@ class _CartpageState extends State<Cartpage> {
     }).toList();
 
 
-    // final result = await Navigator.push(
-    //     context,
-    //     MaterialPageRoute(builder: (context)=>Checkoutpage(selectedItems, totalPrice))
-    // );
-    //
-    //
-    // if (result == true) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(content: Text('Checkout completed successfully!')),
-    //   );
-    // }
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context)=>CheckoutPage(selectedItems, totalPrice))
+    );
+
+
+    if (result == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Checkout completed successfully!')),
+      );
+    }
   }
 
   @override
@@ -110,7 +107,7 @@ class _CartpageState extends State<Cartpage> {
             return Center(child: Text("Something went wrong: ${snapshot.error}"));
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty){
-            return const Center (child: Text ("your cart is empty"));
+            return const Center (child: Text ("Your cart is empty"));
           }
           final items = snapshot.data!.docs;
           final selectedItems = snapshot.data!.docs.where((doc) {

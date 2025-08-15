@@ -37,7 +37,7 @@ class _BestDealsState extends State<BestDeals> {
   TextEditingController Discription = TextEditingController();
 
   Future<void> Best() async {
-    // Validate input fields
+
     if (Name.text.trim().isEmpty ||
         Price.text.trim().isEmpty ||
         Discription.text.trim().isEmpty ||

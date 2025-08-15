@@ -99,18 +99,19 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
         title: Text("Haat Bazar",style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 35,
-          color: Colors.red,
+          color: Colors.green.shade700,
         ),),
         leading: Padding(
           padding: const EdgeInsets.all(6.0),
           child: GestureDetector(
             onTap: () {
               Navigator.push(context,
-                MaterialPageRoute(builder: (context) => profile()),
+                MaterialPageRoute(builder: (context) => ProfilePage()),
               );
               }, child: CircleAvatar(
             backgroundColor: Colors.grey[300],
@@ -131,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                     builder: (context)=>Items()));},
               icon: Icon(Icons.add))
         ],
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.grey.shade50,
         centerTitle: true,
       ),
       body:Padding(
@@ -140,9 +141,9 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               Text("Flash Sale",style: TextStyle(
-                  fontSize: 30,
+                  fontSize: 27,
                   fontWeight: FontWeight.bold,
-                  color: Colors.purpleAccent,
+                  color: Colors.blueGrey,
               ),
               ),
               Container(
@@ -159,90 +160,6 @@ class _HomePageState extends State<HomePage> {
                       }
 
                       final docs = snapshot.data!.docs;
-
-                      // return GridView.builder(
-                      //   padding: const EdgeInsets.all(10),
-                      //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      //     crossAxisCount: 2,
-                      //     mainAxisSpacing: 10,
-                      //     crossAxisSpacing: 10,
-                      //     childAspectRatio: 0.7,
-                      //   ),
-                      //   itemCount: docs.length,
-                      //   itemBuilder: (context, index) {
-                      //     final data = docs[index].data() as Map<String, dynamic>;
-                      //     return Container(
-                      //       color: Colors.white,
-                      //       child: GestureDetector(
-                      //         onTap: () {
-                      //           // Navigator.push(context, MaterialPageRoute(builder: (context)=>Productdetailpage(
-                      //           //     data['name'],data['description'],data['price'],data['image']
-                      //           //
-                      //           // )));
-                      //         },
-                      //         child: Card(
-                      //           elevation: 4,
-                      //           shape: RoundedRectangleBorder(
-                      //               borderRadius: BorderRadius.circular(12)),
-                      //           child: Column(
-                      //             crossAxisAlignment: CrossAxisAlignment.stretch,
-                      //             children: [
-                      //               Expanded(
-                      //                 child: data['image'] != null && data['image'] != ""
-                      //                     ? Image.memory(
-                      //                   base64Decode(data['image']),
-                      //                   fit: BoxFit.cover,
-                      //                 )
-                      //                     : const Icon(Icons.image, size: 80),
-                      //               ),
-                      //               Container(
-                      //                 color: Colors.white38,
-                      //                 child: Row(
-                      //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //                   children: [
-                      //                     // Text(data['name'] ?? "No Name",
-                      //                     //     style: const TextStyle(
-                      //                     //         fontWeight: FontWeight.bold)),
-                      //                     Text("Rs .${data['Price'] ?? 'N/A'}",style: TextStyle(
-                      //                       fontWeight: FontWeight.bold,
-                      //                       color: Colors.deepOrange,
-                      //                     ),),
-                      //                     Container(
-                      //                       padding: const EdgeInsets.symmetric(
-                      //                           horizontal: 3, vertical: 1),
-                      //                       decoration: BoxDecoration(
-                      //                         color: Colors.deepOrange,
-                      //                         borderRadius: BorderRadius.circular(6),
-                      //                       ),
-                      //                       child: Text("-80%",
-                      //                         style: const TextStyle(
-                      //                           color: Colors.white,
-                      //                           fontSize: 12,
-                      //                         ),
-                      //                       ),
-                      //                     )
-                      //                   ],
-                      //                 ),
-                      //               ),
-                      //
-                      //               // ElevatedButton(
-                      //               //   onPressed: () {
-                      //               //  addtocart(
-                      //               //      data['name'],
-                      //               //      data['price'],
-                      //               //      data['description'],
-                      //               //      data["color"],
-                      //               //      data['image']);
-                      //               //   },
-                      //               //   child: Text("Add to cart"),
-                      //               // ),
-                      //             ],
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     );
-                      //   },
-                      // );
                       return SizedBox(
                         height: 250,
                         child: ListView.builder(
@@ -330,68 +247,10 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
               ),
-              //SingleChildScrollView(
-                //scrollDirection: Axis.horizontal,
-                //child: Row(
-                  //children: [
-                //Card(
-                //child: Padding(
-                //padding: const EdgeInsets.all(16),
-                //child: Column(
-                  //children: [
-                   // Image.asset("assets/item/sunglass.webp",height: 120,),
-                   // Text("Sunglass"),
-                   // Text("Rs. 500 "),
-                   // ElevatedButton(onPressed: (){}, child: Text("Add to cart"))
-                  //],
-                //),
-              //),
-    //),
-                   // Card(child: Padding(
-                        //padding: const EdgeInsets.all(16.0),
-                        //child: Column(
-                          //children: [
-                            //Image.asset("assets/item/ball.jpg",height: 120,),
-                            //Text("Ball"),
-                            //Text("Rs. 100"),
-                            //ElevatedButton(onPressed: (){}, child: Text("Add to cart"))
-                          //],
-                        //),
-                      //),
-                    //), Card(
-                      //child: Padding(
-                        //padding: const EdgeInsets.all(16.0),
-                        //child: Column(
-                          //children: [
-                            //Image.asset("assets/item/bag.jpeg",height: 120,),
-                            //Text("Bag"),
-                            //Text("Rs. 700"),
-                            //ElevatedButton(onPressed: (){}, child: Text("Add to cart"))
-                          //],
-                        //),
-                      //),
-                    //),
-                   // Card(
-                     // child: Padding(
-                       // padding: const EdgeInsets.all(16.0),
-                       // child: Column(
-                       //   children: [
-                         //   Image.asset("assets/item/mug.webp",height : 120,),
-                         //   Text("Mug"),
-                         //   Text("Rs. 300"),
-                         //   ElevatedButton(onPressed: (){}, child: Text("Add to cart"))
-                        //  ],
-                      //  ),
-                     // ),
-                   // )
-               // ],),
-              //),
-              //SizedBox(height: 100,),
-
               Text("Summer Sale",style: TextStyle(
-                fontSize: 30,
+                fontSize: 27,
                 fontWeight: FontWeight.bold,
-                color: Colors.deepOrange
+                color: Colors.blueGrey,
               ),),
               Container(
                 height: 350,
@@ -487,151 +346,17 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
 
-                    // return GridView.builder(
-                    //   padding: const EdgeInsets.all(10),
-                    //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    //     crossAxisCount: 2,
-                    //     mainAxisSpacing: 10,
-                    //     crossAxisSpacing: 10,
-                    //     childAspectRatio: 0.7,
-                    //   ),
-                    //   itemCount: docs.length,
-                    //   itemBuilder: (context, index) {
-                    //     final data = docs[index].data() as Map<String, dynamic>;
-                    //     return Container(
-                    //       color: Colors.white,
-                    //       child: GestureDetector(
-                    //         onTap: () {
-                    //           // Navigator.push(context, MaterialPageRoute(builder: (context)=>Productdetailpage(
-                    //           //     data['name'],data['description'],data['price'],data['image']
-                    //           //
-                    //           // )));
-                    //         },
-                    //         child: Card(
-                    //           elevation: 4,
-                    //           shape: RoundedRectangleBorder(
-                    //               borderRadius: BorderRadius.circular(12)),
-                    //           child: Column(
-                    //             crossAxisAlignment: CrossAxisAlignment.stretch,
-                    //             children: [
-                    //               Expanded(
-                    //                 child: data['image'] != null && data['image'] != ""
-                    //                     ? Image.memory(
-                    //                   base64Decode(data['image']),
-                    //                   fit: BoxFit.cover,
-                    //                 )
-                    //                     : const Icon(Icons.image, size: 80),
-                    //               ),
-                    //               Container(
-                    //                 color: Colors.white38,
-                    //                 child: Row(
-                    //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //                   children: [
-                    //                     // Text(data['name'] ?? "No Name",
-                    //                     //     style: const TextStyle(
-                    //                     //         fontWeight: FontWeight.bold)),
-                    //                     Text("Rs .${data['Price'] ?? 'N/A'}",style: TextStyle(
-                    //                       fontWeight: FontWeight.bold,
-                    //                       color: Colors.deepOrange,
-                    //                     ),),
-                    //                     Container(
-                    //                       padding: const EdgeInsets.symmetric(
-                    //                           horizontal: 3, vertical: 1),
-                    //                       decoration: BoxDecoration(
-                    //                         color: Colors.deepOrange,
-                    //                         borderRadius: BorderRadius.circular(6),
-                    //                       ),
-                    //                       child: Text("-80%",
-                    //                         style: const TextStyle(
-                    //                           color: Colors.white,
-                    //                           fontSize: 12,
-                    //                         ),
-                    //                       ),
-                    //                     )
-                    //                   ],
-                    //                 ),
-                    //               ),
-                    //
-                    //               // ElevatedButton(
-                    //               //   onPressed: () {
-                    //               //  addtocart(
-                    //               //      data['name'],
-                    //               //      data['price'],
-                    //               //      data['description'],
-                    //               //      data["color"],
-                    //               //      data['image']);
-                    //               //   },
-                    //               //   child: Text("Add to cart"),
-                    //               // ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     );
-                    //   },
-                    // );
+
                   },
                 ),
               ),
 
-                // child: Row(
-              //    // children: [
-              //       Card(
-              //         child: Padding(
-              //           padding: const EdgeInsets.all(16.0),
-              //           child: Column(
-              //             children: [
-              //               Image.asset("assets/item/toy.webp", height: 120,),
-              //               Text("Toy"),
-              //               Text("Rs. 650"),
-              //               ElevatedButton(onPressed: (){}, child: Text("Add to cart"))
-              //             ],
-              //           ),
-              //         ),
-              //       ),
-              //      Card(
-              //          child: Padding(
-              //            padding: const EdgeInsets.all(16.0),
-              //            child: Column(
-              //              children: [
-              //                Image.asset("assets/item/pen.webp", height: 120,),
-              //                Text("Pen"),
-              //                Text("Rs. 250"),
-              //                ElevatedButton(onPressed: (){}, child: Text("Add to cart"))
-              //              ],
-              //            ),
-              //         ),
-              //        ),
-              //       Card(
-              //         child: Padding(
-              //           padding: const EdgeInsets.all(16.0),
-              //           child: Column(
-              //             children: [
-              //               Image.asset("assets/item/pencil.png", height: 120,),
-              //               Text("Pencil"),
-              //               Text("Rs. 50"),
-              //               ElevatedButton(onPressed: (){}, child: Text("Add to cart"))
-              //             ],
-              //           ),
-              //         ),
-              //       ),
-              //       Card(
-              //         child: Padding(
-              //           padding: const EdgeInsets.all(16.0),
-              //           child: Column(
-              //             children: [
-              //               Image.asset("assets/item/note.webp", height: 120,),
-              //               Text("Notebook"),
-              //               Text("Rs. 500"),
-              //               ElevatedButton(onPressed: (){}, child: Text("Add to cart"))
-              //             ],
-              //           ),
-              //         ),
-              //       ),
-              //     ],),
-              // ),
+
               Text('Best Deal',style:TextStyle(
-                  fontSize: 30,fontWeight: FontWeight.bold,color: Colors.blue)),
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey,
+              )),
               Container(
                 height: 350,
                 child: StreamBuilder<QuerySnapshot>(
@@ -640,96 +365,10 @@ class _HomePageState extends State<HomePage> {
                     if (snapshot.hasError) {
                       return const Center(child: Text('Something went wrong'));
                     }
-
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     }
-
                     final docs = snapshot.data!.docs;
-
-                    // return GridView.builder(
-                    //   padding: const EdgeInsets.all(10),
-                    //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    //     crossAxisCount: 2,
-                    //     mainAxisSpacing: 10,
-                    //     crossAxisSpacing: 10,
-                    //     childAspectRatio: 0.7,
-                    //   ),
-                    //   itemCount: docs.length,
-                    //   itemBuilder: (context, index) {
-                    //     final data = docs[index].data() as Map<String, dynamic>;
-                    //     return Container(
-                    //       color: Colors.white,
-                    //       child: GestureDetector(
-                    //         onTap: () {
-                    //           // Navigator.push(context, MaterialPageRoute(builder: (context)=>Productdetailpage(
-                    //           //     data['name'],data['description'],data['price'],data['image']
-                    //           //
-                    //           // )));
-                    //         },
-                    //         child: Card(
-                    //           elevation: 4,
-                    //           shape: RoundedRectangleBorder(
-                    //               borderRadius: BorderRadius.circular(12)),
-                    //           child: Column(
-                    //             crossAxisAlignment: CrossAxisAlignment.stretch,
-                    //             children: [
-                    //               Expanded(
-                    //                 child: data['image'] != null && data['image'] != ""
-                    //                     ? Image.memory(
-                    //                   base64Decode(data['image']),
-                    //                   fit: BoxFit.cover,
-                    //                 )
-                    //                     : const Icon(Icons.image, size: 80),
-                    //               ),
-                    //               Container(
-                    //                 color: Colors.white38,
-                    //                 child: Row(
-                    //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //                   children: [
-                    //                     // Text(data['name'] ?? "No Name",
-                    //                     //     style: const TextStyle(
-                    //                     //         fontWeight: FontWeight.bold)),
-                    //                     Text("Rs .${data['Price'] ?? 'N/A'}",style: TextStyle(
-                    //                       fontWeight: FontWeight.bold,
-                    //                       color: Colors.deepOrange,
-                    //                     ),),
-                    //                     Container(
-                    //                       padding: const EdgeInsets.symmetric(
-                    //                           horizontal: 3, vertical: 1),
-                    //                       decoration: BoxDecoration(
-                    //                         color: Colors.deepOrange,
-                    //                         borderRadius: BorderRadius.circular(6),
-                    //                       ),
-                    //                       child: Text("-80%",
-                    //                         style: const TextStyle(
-                    //                           color: Colors.white,
-                    //                           fontSize: 12,
-                    //                         ),
-                    //                       ),
-                    //                     )
-                    //                   ],
-                    //                 ),
-                    //               ),
-                    //
-                    //               // ElevatedButton(
-                    //               //   onPressed: () {
-                    //               //  addtocart(
-                    //               //      data['name'],
-                    //               //      data['price'],
-                    //               //      data['description'],
-                    //               //      data["color"],
-                    //               //      data['image']);
-                    //               //   },
-                    //               //   child: Text("Add to cart"),
-                    //               // ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     );
-                    //   },
-                    // );
                     return SizedBox(
                       height: 250,
                       child: ListView.builder(
@@ -812,25 +451,11 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               ),
-             //  SingleChildScrollView(scrollDirection: Axis.horizontal,
-             //    child: Row(
-             //     children: [
-             //      //  Image.asset('assets/item.jpg',height: 100),
-             //      //  SizedBox(width: 30,),
-             //      //  Image.asset('assets/item2.jpg',height: 100),
-             //      //  SizedBox(width: 30,),
-             //      //  Image.asset('assets/item2.jpg',height: 100),
-             //      //  SizedBox(width: 30,),
-             //      //  Image.asset('assets/item2.jpg',height: 100),
-             //
-             //
-             //      ],),
-             // ),
               SizedBox(height: 100,),
               Text("Categories",style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
-                  color: Colors.purpleAccent
+                  color: Colors.blueGrey
               ),
               ),
               SingleChildScrollView(
@@ -890,7 +515,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-               // ElevatedButton(onPressed: (){Navigator.push(context,MaterialPageRoute(builder: (context) => test()),);}, child: Text("Back")),
               ),
               SizedBox(height: 100),
               ElevatedButton(onPressed:()
@@ -912,7 +536,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      backgroundColor: Colors.orange,
 
     );
   }

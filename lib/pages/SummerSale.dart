@@ -44,22 +44,24 @@ class _SummerSaleState extends State<SummerSale> {
         base64Image==null)
     {
       Fluttertoast.showToast(msg: "Empty field please fill up and add image n");
-      return;  // Stop if validation fails
+      return;
     }
     try {
       await FirebaseFirestore.instance.collection("Summer").doc().set({
-        "Name": Name.text,
-        "Price": Price.text,
-        "Discription": Discription.text,
+        "Name": Name.text.trim(),
+        "Price": Price.text.trim(),
+        "Discription": Discription.text.trim(),
         "image":base64Image
         //"timestamp": FieldValue.serverTimestamp(),  // Optional: to save timestamp
       });
 
 
-      // Clear inputs on success
       Name.clear();
       Price.clear();
       Discription.clear();
+      setState(() {
+        base64Image = null;
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Item added successfully!")),
@@ -87,7 +89,7 @@ class _SummerSaleState extends State<SummerSale> {
         centerTitle: true,),
       body:
       Padding(
-        padding: const EdgeInsets.all(40.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
             if (base64Image != null)

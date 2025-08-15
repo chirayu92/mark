@@ -48,9 +48,9 @@ class _FlashSaleState extends State<FlashSale> {
     }
     try {
       await FirebaseFirestore.instance.collection("Flash").doc().set({
-        "Name": Name.text,
-        "Price": Price.text,
-        "Discription": Discription.text,
+        "Name": Name.text.trim(),
+        "Price": Price.text.trim(),
+        "Discription": Discription.text.trim(),
         "image":base64Image
         //"timestamp": FieldValue.serverTimestamp(),  // Optional: to save timestamp
       });
@@ -58,7 +58,7 @@ class _FlashSaleState extends State<FlashSale> {
       Price.clear();
       Discription.clear();
       setState(() {
-        base64Image == null;
+        base64Image = null;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -88,7 +88,7 @@ class _FlashSaleState extends State<FlashSale> {
       centerTitle: true,),
       body:
       Padding(
-        padding: const EdgeInsets.all(40.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
             if (base64Image != null)
